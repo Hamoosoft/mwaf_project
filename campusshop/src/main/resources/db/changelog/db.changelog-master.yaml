@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/001-init-schema.yaml
+  - include:
+      file: db/changelog/020-addresses-and-order-checkout.yaml
+  - include:
+      file: db/changelog/021-orders-user-link.yaml
+  - include:
+      file: db/changelog/022-orders-aud-sync.yaml

@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 021-orders-user-link
+      author: campusshop
+      changes:
+
+        # 1) user_id Spalte hinzufügen (erst nullable)
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+
+        # 2) Bestehende Orders einem User zuordnen
+
+        - sql:
+            sql: |
+              UPDATE orders
+              SET user_id = (
+                SELECT id FROM users
+                ORDER BY id
+                LIMIT 1
+              )
+              WHERE user_id IS NULL;
+
+        # 3) user_id auf NOT NULL setzen
+        - addNotNullConstraint:
+            tableName: orders
+            columnName: user_id
+
+        # 4) Foreign Key: orders -> users
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_orders_user
+
+        # 5) Index für bessere Performance
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_user_id
+            columns:
+              - column:
+                  name: user_id

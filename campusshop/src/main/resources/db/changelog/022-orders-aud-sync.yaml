@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 022-orders-aud-sync
+      author: campusshop
+      changes:
+
+        # Envers Audit-Tabelle an orders anpassen
+        - addColumn:
+            tableName: orders_aud
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+
+              - column:
+                  name: shipping_full_name
+                  type: VARCHAR(255)
+
+              - column:
+                  name: shipping_street
+                  type: VARCHAR(255)
+
+              - column:
+                  name: shipping_zip
+                  type: VARCHAR(30)
+
+              - column:
+                  name: shipping_city
+                  type: VARCHAR(255)
+
+              - column:
+                  name: shipping_country
+                  type: VARCHAR(2)
+
+              - column:
+                  name: payment_method
+                  type: VARCHAR(30)

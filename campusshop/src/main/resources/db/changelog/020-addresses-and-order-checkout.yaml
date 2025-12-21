@@ -1,0 +1,123 @@
+databaseChangeLog:
+  - changeSet:
+      id: 020-addresses-and-order-checkout
+      author: campusshop
+      changes:
+
+        - createTable:
+            tableName: addresses
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_addresses
+
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: full_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: street
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: zip
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: city
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: country
+                  type: VARCHAR(2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: is_default
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+        - addForeignKeyConstraint:
+            baseTableName: addresses
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_addresses_user
+
+        - createIndex:
+            tableName: addresses
+            indexName: idx_addresses_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        # Orders: Checkout Snapshot + Payment
+        - addColumn:
+            tableName: orders
+            columns:
+              - column: { name: shipping_full_name, type: VARCHAR(255) }
+              - column: { name: shipping_street, type: VARCHAR(255) }
+              - column: { name: shipping_zip, type: VARCHAR(30) }
+              - column: { name: shipping_city, type: VARCHAR(255) }
+              - column: { name: shipping_country, type: VARCHAR(2) }
+              - column: { name: payment_method, type: VARCHAR(30) }
+
+        # Defaults für evtl. bestehende Orders (falls DB nicht leer ist)
+        - sql:
+            sql: |
+              UPDATE orders
+              SET
+                shipping_full_name = COALESCE(shipping_full_name, 'UNKNOWN'),
+                shipping_street = COALESCE(shipping_street, 'UNKNOWN'),
+                shipping_zip = COALESCE(shipping_zip, 'UNKNOWN'),
+                shipping_city = COALESCE(shipping_city, 'UNKNOWN'),
+                shipping_country = COALESCE(shipping_country, 'DE'),
+                payment_method = COALESCE(payment_method, 'CARD');
+
+        - addNotNullConstraint: { tableName: orders, columnName: shipping_full_name }
+        - addNotNullConstraint: { tableName: orders, columnName: shipping_street }
+        - addNotNullConstraint: { tableName: orders, columnName: shipping_zip }
+        - addNotNullConstraint: { tableName: orders, columnName: shipping_city }
+        - addNotNullConstraint: { tableName: orders, columnName: shipping_country }
+        - addNotNullConstraint: { tableName: orders, columnName: payment_method }
