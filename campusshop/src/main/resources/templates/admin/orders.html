@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Admin · Bestellungen', ~{::content})}">
+
+<div th:fragment="content">
+    <div class="page-header">
+        <h2>📦 Alle Bestellungen</h2>
+        <p class="muted">Nur Admin kann diese Seite sehen.</p>
+    </div>
+
+    <div class="hero__card profile-card" th:if="${#lists.isEmpty(orders)}">
+        <p class="muted">Noch keine Bestellungen vorhanden.</p>
+    </div>
+
+    <div class="hero__card profile-card" th:each="o : ${orders}" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+            <div>
+                <b>Bestellung #<span th:text="${o.id}">0</span></b>
+                <div class="muted">
+                    Status: <span th:text="${o.status}">NEW</span> ·
+                    <span th:text="${#temporals.format(o.orderedAt, 'dd.MM.yyyy HH:mm')}">-</span>
+                </div>
+            </div>
+
+            <!-- Detail-Link: nutzt deinen existierenden /orders/{id} (USER-Details) -->
+            <a class="btn btn--ghost btn--small" th:href="@{/orders/{id}(id=${o.id})}">Details</a>
+        </div>
+    </div>
+
+    <div class="btnRow" style="margin-top:16px">
+        <a class="btn btn--ghost" th:href="@{'/orders/' + ${o.id}}">⬅ Admin Dashboard</a>
+    </div>
+</div>
+</html>

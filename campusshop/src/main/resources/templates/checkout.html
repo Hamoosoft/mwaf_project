@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Checkout</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div class="container form-page">
+
+    <div class="page-header">
+        <h2>Checkout</h2>
+        <p class="subheading">
+            Wähle deine Lieferadresse und eine Zahlungsmethode aus, dann kannst du die Bestellung abschicken.
+        </p>
+    </div>
+
+    <div class="profile-layout">
+
+        <!-- LEFT: Form -->
+        <div class="hero__card profile-card">
+            <h3>Lieferung & Zahlung</h3>
+
+            <form th:action="@{/checkout}" th:object="${checkout}" method="post" class="form">
+
+                <!-- Adresse -->
+                <div class="form-group">
+                    <label class="form-label">Lieferadresse</label>
+
+                    <select class="form-input" th:field="*{addressId}" required>
+                        <option value="" disabled>Bitte Adresse auswählen…</option>
+
+                        <option th:each="a : ${addresses}"
+                                th:value="${a.id}"
+                                th:selected="${a.id == checkout.addressId}"
+                                th:text="${(a.defaultAddress ? '✅ Standard · ' : '') + a.fullName + ' — ' + a.street + ', ' + a.zip + ' ' + a.city + ' (' + a.country + ')'}">
+                        </option>
+                    </select>
+
+                    <p class="form-hint">
+                        Tipp: Deine Standardadresse ist mit ✅ markiert und steht oben.
+                    </p>
+                </div>
+
+                <!-- Zahlung -->
+                <div class="form-group">
+                    <label class="form-label">Zahlungsmethode</label>
+
+                    <select class="form-input" th:field="*{paymentMethod}" required>
+                        <option th:each="pm : ${paymentMethods}"
+                                th:value="${pm}"
+                                th:text="${
+                                    pm.name() == 'CARD' ? 'Kreditkarte' :
+                                    (pm.name() == 'PAYPAL' ? 'PayPal' :
+                                    (pm.name() == 'INVOICE' ? 'Rechnung' : pm.name()))
+                                }">
+                        </option>
+                    </select>
+
+                    <p class="form-hint">
+                        Die Zahlungsart wird in der Bestellung gespeichert (Snapshot), damit sie später nachvollziehbar bleibt.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn-block">
+                    Bestellung abschicken
+                </button>
+
+            </form>
+        </div>
+
+        <!-- RIGHT: Hinweis / Summary -->
+        <div class="hero__card profile-card">
+            <h3>Hinweis</h3>
+            <p class="miniCard__text" style="margin:0;">
+                eine Bestellübersicht anzeigt:
+                Produkte, Mengen und Gesamtsumme
+            </p>
+
+            <div class="info-text" style="margin-top:12px;">
+                ✅ Adresse wird als Snapshot in der Order gespeichert<br>
+                ✅ Zahlungsmethode wird mitgespeichert<br>
+            </div>
+
+            <a class="btn btn--secondary btn-block" th:href="@{/addresses}">
+                Adressen verwalten
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -16,11 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 
-/**
- * Legt Beispiel-Daten an (nur wenn die Tabellen leer sind).
- * - Default-User: admin/admin123 und user/user123
- * - Kategorien + Produkte
- */
 @Configuration
 public class DataInitializer {
 
@@ -30,13 +25,15 @@ public class DataInitializer {
     private static final String SLUG_STATIONERY = "schreibwaren";
     private static final String SLUG_MUGS = "tassen";
 
+    // ✅ Dein Ordner in static resources:
+    private static final String IMG_BASE = "/static.css/produkt.images/";
+
     @Bean
     CommandLineRunner initData(ProductRepository productRepository,
                                CategoryRepository categoryRepository,
                                AppUserRepository appUserRepository,
                                PasswordEncoder passwordEncoder) {
         return args -> {
-
             createDefaultUsersIfEmpty(appUserRepository, passwordEncoder);
             createDefaultCategoriesIfEmpty(categoryRepository);
             createDefaultProductsIfEmpty(productRepository, categoryRepository);
@@ -49,19 +46,8 @@ public class DataInitializer {
             return;
         }
 
-        AppUser admin = new AppUser(
-                "admin",
-                passwordEncoder.encode("admin123"),
-                Role.ADMIN,
-                true
-        );
-
-        AppUser user = new AppUser(
-                "user",
-                passwordEncoder.encode("user123"),
-                Role.USER,
-                true
-        );
+        AppUser admin = new AppUser("admin", passwordEncoder.encode("admin123"), Role.ADMIN, true);
+        AppUser user = new AppUser("user", passwordEncoder.encode("user123"), Role.USER, true);
 
         appUserRepository.save(admin);
         appUserRepository.save(user);
@@ -99,7 +85,7 @@ public class DataInitializer {
                 new BigDecimal("39.99"),
                 50,
                 true,
-                "/images/campus-hoodie.jpg",
+                "/images/hoodie.jpg",
                 clothing
         ));
 
@@ -109,7 +95,7 @@ public class DataInitializer {
                 new BigDecimal("4.99"),
                 200,
                 true,
-                "/images/campus-notizbuch.jpg",
+                "/images/notebook.png",
                 stationery
         ));
 
@@ -119,7 +105,7 @@ public class DataInitializer {
                 new BigDecimal("9.99"),
                 120,
                 true,
-                "/images/campus-becher.jpg",
+                "/images/mug.jpg",
                 mugs
         ));
 
@@ -129,15 +115,25 @@ public class DataInitializer {
                 new BigDecimal("1.49"),
                 500,
                 true,
-                "/images/campus-kugelschreiber.jpg",
+                "/images/kugelschreiber.jpg",
                 stationery
         ));
 
-        log.info("Beispielprodukte wurden angelegt (mit Kategorien).");
+        productRepository.save(new Product(
+                "Campus Rucksack",
+                "Blauer Kugelschreiber (Mine austauschbar). Perfekt für Prüfungen.",
+                new BigDecimal("1.49"),
+                500,
+                true,
+                "/images/rucksak.jpg",
+                stationery
+        ));
+
+
+        log.info("Beispielprodukte wurden angelegt (mit Kategorien + Images).");
     }
 
     private Category findCategoryBySlugOrThrow(CategoryRepository repo, String slug) {
-        // Besser wäre: repo.findBySlug(slug) als Repository-Methode
         return repo.findAll().stream()
                 .filter(c -> slug.equals(c.getSlug()))
                 .findFirst()

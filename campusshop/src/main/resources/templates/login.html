@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Login', ~{::content})}">
+
+<div th:fragment="content">
+
+    <section class="auth">
+        <div class="authCard">
+            <h1>Login</h1>
+            <p class="muted">Bitte melde dich an, um den Warenkorb und checkout zu nutzen.</p>
+
+            <div class="alert alert--error" th:if="${param.error}">
+                Login fehlgeschlagen. Bitte Username/Passwort prüfen.
+            </div>
+
+            <div class="alert alert--ok" th:if="${param.logout}">
+                Du wurdest ausgeloggt.
+            </div>
+
+            <form method="post" th:action="@{/login}" class="form">
+                <label class="label">Username</label>
+                <input class="input" type="text" name="username" autocomplete="username" required>
+
+                <label class="label">Passwort</label>
+                <input class="input" type="password" name="password" autocomplete="current-password" required>
+
+                <button class="btn btn--primary" type="submit">Einloggen</button>
+            </form>
+
+            <p class="muted" style="margin-top:12px;">
+                Noch kein Konto? <a th:href="@{/register}">Registrieren</a>
+            </p>
+        </div>
+    </section>
+
+</div>
+</html>

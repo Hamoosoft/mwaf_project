@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Admin', ~{::content})}">
+<div th:fragment="content">
+    <div class="page-header">
+        <h2>🛠️ Admin Dashboard</h2>
+        <p class="muted">Verwaltung für Bestellungen & Produkte (später).</p>
+    </div>
+
+    <div class="btnRow">
+        <a class="btn btn--primary" th:href="@{/admin/orders}">📦 Alle Bestellungen</a>
+        <a class="btn btn--ghost" th:href="@{/}">⬅ Zurück zum Shop</a>
+    </div>
+</div>
+</html>

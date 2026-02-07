@@ -18,6 +18,7 @@ import java.util.List;
  * REST-Controller für Bestellungen.
  */
 @RestController
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Bestellungen', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="page-header">
+        <h2>Meine Bestellungen</h2>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="muted">
+        Noch keine Bestellungen vorhanden.
+    </div>
+
+    <div th:each="o : ${orders}" class="hero__card profile-card" style="margin-bottom:12px">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+            <div>
+                <b>Bestellung #<span th:text="${o.id}">0</span></b>
+                <div class="muted">
+                    Status: <span th:text="${o.status}">NEW</span> ·
+                    <span th:text="${#temporals.format(o.orderedAt, 'dd.MM.yyyy HH:mm')}">-</span>
+                </div>
+            </div>
+
+            <div style="text-align:right">
+                <b th:text="${#numbers.formatDecimal(o.total, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</b>
+                <div>
+                    <a class="btn btn--ghost" th:href="@{'/orders/' + ${o.id}}">Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</html>

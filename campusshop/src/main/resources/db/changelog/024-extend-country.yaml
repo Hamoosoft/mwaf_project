@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-07-extend-country
+      author: osman
+      changes:
+        - modifyDataType:
+            tableName: orders
+            columnName: shipping_country
+            newDataType: varchar(100)
+
+        - modifyDataType:
+            tableName: orders_aud
+            columnName: shipping_country
+            newDataType: varchar(100)
+
+        - modifyDataType:
+            tableName: addresses
+            columnName: country
+            newDataType: varchar(100)

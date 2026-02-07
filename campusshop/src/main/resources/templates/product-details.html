@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(${product.name}, ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="hero">
+        <div class="hero__card">
+            <span class="hero__tag">Produktdetails</span>
+
+            <!-- ✅ Bild -->
+            <div class="card__imgWrap" style="margin:12px 0;">
+                <img class="card__img"
+                     th:src="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)} ? @{${product.imageUrl}} : @{/images/placeholder.png}"
+                     th:alt="${product.name}" />
+            </div>
+
+            <h1 th:text="${product.name}">Produktname</h1>
+            <p class="hero__subtitle" th:text="${product.description}">Beschreibung...</p>
+
+            <div class="card__footer" style="margin-top:18px;">
+                <div class="price"
+                     th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</div>
+
+                <div class="btnRow">
+                    <a class="btn btn--secondary" th:href="@{/}">⬅ Zurück</a>
+
+                    <form th:action="@{/cart/add}" method="post" class="inline">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn--primary"
+                                th:disabled="${!product.active || product.stock == 0}">
+                            In den Warenkorb
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <p class="muted" style="margin-top:14px;">
+                Lager: <strong th:text="${product.stock}">0</strong>
+                <span th:if="${!product.active}" class="alert alert--error" style="display:inline-block;margin-left:8px;">
+                    Inaktiv
+                </span>
+                <span th:if="${product.stock == 0}" class="alert alert--error" style="display:inline-block;margin-left:8px;">
+                    Ausverkauft
+                </span>
+            </p>
+
+        </div>
+    </div>
+
+</div>
+</html>

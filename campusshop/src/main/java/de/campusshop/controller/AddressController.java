@@ -17,7 +17,9 @@ import java.util.List;
  * REST-Controller für Adressen (nur für eingeloggte User).
  */
 @RestController
+@RequestMapping("/api/addresses")
 public class AddressController {
+
 
     private final AddressService addressService;
     private final AppUserRepository appUserRepository;
