@@ -1,42 +1,73 @@
 <!doctype html>
 <html lang="de" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout('Admin · Bestellungen', ~{::content})}">
+      th:replace="~{admin/layout-admin :: layout('Admin · Bestellungen', ~{::content})}">
 
 <div th:fragment="content">
+
     <div class="page-header">
-        <h2>📦 Alle Bestellungen</h2>
-        <p class="muted">Nur Admin kann diese Seite sehen.</p>
+        <h2>📦 Admin · Bestellungen</h2>
+        <p class="muted">
+            Hier siehst du alle Bestellungen. Klicke auf <b>Bearbeiten</b>, um den Status zu ändern.
+        </p>
     </div>
 
     <!-- Leerzustand -->
-    <div class="hero__card profile-card" th:if="${#lists.isEmpty(orders)}">
-        <p class="muted">Noch keine Bestellungen vorhanden.</p>
+    <div class="hero__card profile-card"
+         th:if="${orders == null || #lists.isEmpty(orders)}"
+         style="text-align:center; padding:22px;">
+        <div style="font-size:34px; margin-bottom:6px;">🗂️</div>
+        <p class="muted" style="margin:0;">Noch keine Bestellungen vorhanden.</p>
     </div>
 
     <!-- Liste -->
-    <div th:unless="${#lists.isEmpty(orders)}">
+    <div th:if="${orders != null && !#lists.isEmpty(orders)}"
+         style="display:flex; flex-direction:column; gap:12px;">
+
         <div class="hero__card profile-card order-card"
-             th:each="o : ${orders}">
-            <div class="order-card__row">
-                <div>
-                    <b>Bestellung #<span th:text="${o.id}">0</span></b>
-                    <div class="muted">
-                        Status: <span th:text="${o.status}">NEW</span>
-                        <span class="dot">·</span>
+             th:each="o : ${orders}"
+             style="padding:16px;">
+
+            <div class="order-card__row" style="align-items:center; gap:14px;">
+
+                <!-- Left -->
+                <div style="min-width:0;">
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <b style="font-size:16px;">
+                            Bestellung #<span th:text="${o.id}">0</span>
+                        </b>
+
+                        <!-- ✅ Status Badge mit data-status (damit CSS greift) -->
+                        <span class="hero__tag"
+                              style="margin:0;"
+                              th:attr="data-status=${o.status}"
+                              th:text="${o.status}">
+                            NEW
+                        </span>
+                    </div>
+
+                    <div class="muted" style="margin-top:6px;">
+                        <span>Datum:</span>
                         <span th:text="${#temporals.format(o.orderedAt, 'dd.MM.yyyy HH:mm')}">-</span>
                     </div>
                 </div>
 
-                <!-- Details -->
-                <a class="btn btn--ghost" th:href="@{/orders/{id}(id=${o.id})}">Details</a>
+                <!-- Right -->
+                <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                    <a class="btn btn--primary btn--small"
+                       th:href="@{/admin/orders/{id}(id=${o.id})}">
+                        Bearbeiten
+                    </a>
+                </div>
+
             </div>
         </div>
     </div>
 
     <div class="btnRow" style="margin-top:16px">
-        <!-- ✅ Fix: richtiger Zurück-Link -->
-        <a class="btn btn--ghost" th:href="@{/admin}">⬅ Admin Dashboard</a>
+        <a class="btn btn--ghost" th:href="@{/admin}">
+            ⬅ Zurück zum Dashboard
+        </a>
     </div>
-</div>
 
+</div>
 </html>

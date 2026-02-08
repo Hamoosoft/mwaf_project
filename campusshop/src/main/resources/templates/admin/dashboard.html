@@ -1,15 +1,38 @@
 <!doctype html>
 <html lang="de" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout('Admin', ~{::content})}">
+      th:replace="~{admin/layout-admin :: layout('Admin · Dashboard', ~{::content})}">
+
 <div th:fragment="content">
     <div class="page-header">
         <h2>🛠️ Admin Dashboard</h2>
-        <p class="muted">Verwaltung für Bestellungen & Produkte (später).</p>
+        <p class="muted">Hier verwaltest du Produkte und Bestellungen.</p>
     </div>
 
-    <div class="btnRow">
-        <a class="btn btn--primary" th:href="@{/admin/orders}">📦 Alle Bestellungen</a>
+    <div class="grid grid--2" style="margin-top:12px">
+
+        <div class="hero__card profile-card">
+            <h3>📦 Bestellungen</h3>
+            <p class="muted">Alle Bestellungen sehen & Status bearbeiten.</p>
+
+            <div class="btnRow" style="margin-top:12px">
+                <a class="btn btn--primary" th:href="@{/admin/orders}">Alle Bestellungen</a>
+            </div>
+        </div>
+
+        <div class="hero__card profile-card">
+            <h3>🛒 Produkte</h3>
+            <p class="muted">Produkte anlegen, bearbeiten, deaktivieren oder löschen.</p>
+
+            <div class="btnRow" style="margin-top:12px">
+                <a class="btn btn--primary" th:href="@{/admin/products}">Produktverwaltung</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="btnRow" style="margin-top:16px">
         <a class="btn btn--ghost" th:href="@{/}">⬅ Zurück zum Shop</a>
     </div>
 </div>
+
 </html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout-admin :: layout('Admin · Bestellung', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="page-header">
+        <h2>🛠️ Admin · Bestellung #<span th:text="${order.id}">0</span></h2>
+        <p class="muted">
+            Hier kannst du die Bestellung ansehen und den Status ändern.
+        </p>
+    </div>
+
+    <!-- ✅ Fehler-/Info-Message (optional, falls Controller redirectAttributes setzt) -->
+    <div th:if="${error}" class="alert alert--error" style="margin-bottom:12px" th:text="${error}">
+        Fehler
+    </div>
+    <div th:if="${success}" class="alert alert--success" style="margin-bottom:12px" th:text="${success}">
+        OK
+    </div>
+
+    <div class="grid grid--2">
+
+        <!-- LEFT: Bestellung Info -->
+        <div class="hero__card profile-card">
+            <h3>Bestellinfos</h3>
+
+            <div class="muted">
+                Status: <b th:text="${order.status}">NEW</b>
+                <span class="dot">·</span>
+                <span th:text="${#temporals.format(order.orderedAt, 'dd.MM.yyyy HH:mm')}">-</span>
+            </div>
+
+            <div style="margin-top:12px;">
+                <div class="muted">Gesamt:</div>
+                <div class="price"
+                     th:text="${#numbers.formatDecimal(order.total, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</div>
+            </div>
+
+            <hr class="sep"/>
+
+            <h3>Lieferadresse (Snapshot)</h3>
+            <div class="muted" th:text="${order.shippingFullName}">Name</div>
+            <div class="muted" th:text="${order.shippingStreet}">Street</div>
+            <div class="muted">
+                <span th:text="${order.shippingZip}">0</span>
+                <span th:text="${order.shippingCity}">City</span>
+            </div>
+            <div class="muted" th:text="${order.shippingCountry}">DE</div>
+
+            <hr class="sep"/>
+
+            <h3>Zahlungsmethode</h3>
+            <div class="muted" th:text="${order.paymentMethod}">CARD</div>
+        </div>
+
+        <!-- RIGHT: Status ändern + Positionen -->
+        <div class="hero__card profile-card">
+            <h3>Status ändern</h3>
+
+            <!-- ✅ FORM: Status ändern -->
+            <form th:action="@{/admin/orders/{id}/status(id=${order.id})}"
+                  method="post"
+                  onsubmit="return checkStatusChange();"
+                  class="form">
+
+                <!-- Optimistic Locking -->
+                <input type="hidden" name="version" th:value="${order.version}"/>
+
+                <div class="form-group">
+                    <label class="form-label">Neuer Status</label>
+
+                    <select class="form-input" name="status" id="statusSelect" required>
+                        <option th:each="s : ${T(de.campusshop.model.OrderStatus).values()}"
+                                th:value="${s}"
+                                th:selected="${s == order.status}"
+                                th:text="${s}">
+                        </option>
+                    </select>
+
+                    <p class="form-hint" style="margin-top:8px;">
+                        Regel: NEW → PAID → SHIPPED (oder CANCELLED).
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn-block">
+                    Status speichern
+                </button>
+            </form>
+
+            <hr class="sep"/>
+
+            <h3>Positionen</h3>
+
+            <div th:if="${#lists.isEmpty(order.items)}" class="muted">
+                Keine Positionen.
+            </div>
+
+            <div th:each="i : ${order.items}" class="lineItem">
+                <div>
+                    <b th:text="${i.productName}">Produkt</b>
+                    <div class="muted">Menge: <span th:text="${i.quantity}">1</span></div>
+                </div>
+                <div style="text-align:right">
+                    <div class="muted"
+                         th:text="${#numbers.formatDecimal(i.unitPrice, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00</div>
+                    <div>
+                        <b th:text="${#numbers.formatDecimal(i.lineTotal, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btnRow" style="margin-top:16px">
+                <a class="btn btn--ghost" th:href="@{/admin/orders}">
+                    ⬅ Zurück zur Liste
+                </a>
+
+                <a class="btn btn--ghost" th:href="@{/admin}">
+                    🛠️ Dashboard
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ✅ JS: Alert wenn NEW → SHIPPED -->
+    <script>
+        function checkStatusChange() {
+            const currentStatus = '[[${order.status}]]';
+            const newStatus = document.getElementById('statusSelect').value;
+
+            if (currentStatus === 'NEW' && newStatus === 'SHIPPED') {
+                alert(
+                    '❌ Ungültiger Statuswechsel\n\n' +
+                    'Eine Bestellung muss zuerst auf "PAID" gesetzt werden,\n' +
+                    'bevor sie als "SHIPPED" markiert werden kann.'
+                );
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
+</div>
+</html>

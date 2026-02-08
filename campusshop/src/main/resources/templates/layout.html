@@ -22,15 +22,18 @@
         <nav class="nav nav--pill">
             <a class="navItem" th:href="@{/}">🛒 <span>Produkte</span></a>
 
-            <!-- ✅ FIX -->
             <a class="navItem"
-               th:if="${#authentication != null && #authentication.name != 'anonymousUser'}"
-               th:href="@{/orders}">📦 <span>Bestellungen</span></a>
+               th:if="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/orders}">
+                📦 <span>Bestellungen</span>
+            </a>
 
             <a class="navItem"
-               th:if="${#authentication != null && #authentication.name != 'anonymousUser'}"
-               th:href="@{/addresses}">📍 <span>Adressen</span></a>
-            <!--admin-->
+               th:if="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/addresses}">
+                📍 <span>Adressen</span>
+            </a>
+
             <a class="navItem"
                th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
                th:href="@{/admin}">
@@ -38,27 +41,32 @@
             </a>
 
             <a class="navItem"
-               th:if="${#authentication != null && #authentication.name != 'anonymousUser'}"
-               th:href="@{/profile}">👤 <span>Mein Profil</span></a>
+               th:if="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/profile}">
+                👤 <span>Mein Profil</span>
+            </a>
         </nav>
 
         <div class="topbar__actions">
 
+            <!-- Cart immer sichtbar, damit es nicht "wandert" -->
+            <a class="cartBtn" th:href="@{/cart}" title="Warenkorb">
+                🧺
+                <span class="cartBadge"
+                      th:if="${cartCount != null && cartCount > 0}"
+                      th:text="${cartCount}">0</span>
+            </a>
+
+            <!-- Logged out -->
             <div class="actions"
-                 th:if="${#authentication == null || #authentication.name == 'anonymousUser'}">
+                 th:if="${#authorization.expression('!isAuthenticated()')}">
                 <a class="btn btn--ghost" th:href="@{/login}">Einloggen</a>
                 <a class="btn btn--ghost" th:href="@{/register}">Registrieren</a>
-
-                <a class="cartBtn" th:href="@{/cart}" title="Warenkorb">
-                    🧺
-                    <span class="cartBadge"
-                          th:if="${cartCount != null && cartCount > 0}"
-                          th:text="${cartCount}">0</span>
-                </a>
             </div>
 
+            <!-- Logged in -->
             <div class="actions"
-                 th:if="${#authentication != null && #authentication.name != 'anonymousUser'}">
+                 th:if="${#authorization.expression('isAuthenticated()')}">
 
                 <span class="userChip">
                     <span class="userIcon">👤</span>
@@ -68,13 +76,6 @@
                 <form th:action="@{/logout}" method="post" class="inline">
                     <button class="btn btn--ghost" type="submit">Logout</button>
                 </form>
-
-                <a class="cartBtn" th:href="@{/cart}" title="Warenkorb">
-                    🧺
-                    <span class="cartBadge"
-                          th:if="${cartCount != null && cartCount > 0}"
-                          th:text="${cartCount}">0</span>
-                </a>
             </div>
 
         </div>

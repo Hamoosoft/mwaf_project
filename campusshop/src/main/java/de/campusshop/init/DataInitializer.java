@@ -111,7 +111,7 @@ public class DataInitializer {
 
         productRepository.save(new Product(
                 "Campus Kugelschreiber",
-                "Blauer Kugelschreiber (Mine austauschbar). Perfekt für Prüfungen.",
+                "Blauer Kugelschreiber (Mine austauschbar).",
                 new BigDecimal("1.49"),
                 500,
                 true,
@@ -121,7 +121,7 @@ public class DataInitializer {
 
         productRepository.save(new Product(
                 "Campus Rucksack",
-                "Blauer Kugelschreiber (Mine austauschbar). Perfekt für Prüfungen.",
+                "Campus Rucksack. Perfekt für Studenten.",
                 new BigDecimal("1.49"),
                 500,
                 true,

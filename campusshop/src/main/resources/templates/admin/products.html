@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Admin · Produkte', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="page-header">
+        <h2>🛠️ Admin · Produkte</h2>
+        <p class="muted">
+            Produkte anlegen, bearbeiten, aktiv/deaktivieren oder löschen.
+        </p>
+
+        <!-- Navigation oben -->
+        <div class="btnRow" style="margin-top:12px; flex-wrap:wrap;">
+            <a class="btn btn--ghost" th:href="@{/admin}">
+                ⬅ Admin Dashboard
+            </a>
+
+            <a class="btn btn--secondary" th:href="@{/admin/orders}">
+                📦 Bestellungen
+            </a>
+
+            <a class="btn btn--ghost" th:href="@{/}">
+                🏠 Shop ansehen
+            </a>
+        </div>
+    </div>
+
+    <!-- Aktionen -->
+    <div class="btnRow" style="margin-bottom:18px">
+        <a class="btn btn--primary" th:href="@{/admin/products/new}">
+            ➕ Neues Produkt
+        </a>
+    </div>
+
+    <!-- Produktliste -->
+    <div class="grid">
+
+        <div class="card" th:each="p : ${products}">
+
+            <div class="card__imgWrap">
+                <img class="card__img"
+                     th:src="@{${p.imageUrl}}"
+                     alt="Produktbild"
+                     loading="lazy"/>
+            </div>
+
+            <div class="card__body">
+
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+                    <b th:text="${p.name}">Produkt</b>
+
+                    <span th:if="${!p.active}"
+                          class="hero__tag"
+                          style="background:#ffe5e5;color:#a40000;">
+                        INAKTIV
+                    </span>
+                </div>
+
+                <div class="muted"
+                     th:text="${p.description}"
+                     style="margin-top:6px;">
+                    Beschreibung
+                </div>
+
+                <div class="card__footer">
+
+                    <div>
+                        <div class="price"
+                             th:text="${#numbers.formatDecimal(p.price,1,'COMMA',2,'POINT')} + ' €'">
+                            0,00 €
+                        </div>
+                        <div class="muted">
+                            Lager: <span th:text="${p.stock}">0</span>
+                        </div>
+                    </div>
+
+                    <div class="btnRow" style="flex-wrap:wrap; gap:6px;">
+
+                        <a class="btn btn--ghost btn--small"
+                           th:href="@{/admin/products/{id}/edit(id=${p.id})}">
+                            ✏️ Bearbeiten
+                        </a>
+
+                        <form class="inline"
+                              method="post"
+                              th:action="@{/admin/products/{id}/toggle(id=${p.id})}">
+                            <button class="btn btn--secondary btn--small"
+                                    type="submit"
+                                    th:text="${p.active ? 'Deaktivieren' : 'Aktivieren'}">
+                                Toggle
+                            </button>
+                        </form>
+
+                        <form class="inline"
+                              method="post"
+                              th:action="@{/admin/products/{id}/delete(id=${p.id})}">
+                            <button class="btn btn--danger btn--small"
+                                    type="submit"
+                                    onclick="return confirm(
+                                      'Wirklich löschen?\n\n' +
+                                      'Hinweis: Falls das Produkt bereits in Bestellungen vorkommt, ' +
+                                      'wird es nur deaktiviert.'
+                                    )">
+                                🗑️ Löschen
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</html>
