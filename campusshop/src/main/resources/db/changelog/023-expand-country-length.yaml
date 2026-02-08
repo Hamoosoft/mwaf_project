@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 021-expand-country-length
+      author: campusshop
+      changes:
+        - modifyDataType:
+            tableName: addresses
+            columnName: country
+            newDataType: VARCHAR(100)
+
+        - modifyDataType:
+            tableName: orders
+            columnName: shipping_country
+            newDataType: VARCHAR(100)
+  

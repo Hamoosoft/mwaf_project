@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, content)">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${title}">CampusShop</title>
+
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+<header class="topbar">
+    <div class="topbar__inner topbar__pill">
+
+        <a class="brand" th:href="@{/}">
+            <span class="brand__logo">HSM</span>
+            <span class="brand__name">Online Shop</span>
+        </a>
+
+        <nav class="nav nav--pill">
+            <a class="navItem" th:href="@{/}">🛒 <span>Produkte</span></a>
+
+            <a class="navItem"
+               th:if="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/orders}">
+                📦 <span>Bestellungen</span>
+            </a>
+
+            <a class="navItem"
+               th:if="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/addresses}">
+                📍 <span>Adressen</span>
+            </a>
+
+            <a class="navItem"
+               th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+               th:href="@{/admin}">
+                🛠️ <span>Admin</span>
+            </a>
+
+            <a class="navItem"
+               th:if="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/profile}">
+                👤 <span>Mein Profil</span>
+            </a>
+        </nav>
+
+        <div class="topbar__actions">
+
+            <!-- Cart immer sichtbar, damit es nicht "wandert" -->
+            <a class="cartBtn" th:href="@{/cart}" title="Warenkorb">
+                🧺
+                <span class="cartBadge"
+                      th:if="${cartCount != null && cartCount > 0}"
+                      th:text="${cartCount}">0</span>
+            </a>
+
+            <!-- Logged out -->
+            <div class="actions"
+                 th:if="${#authorization.expression('!isAuthenticated()')}">
+                <a class="btn btn--ghost" th:href="@{/login}">Einloggen</a>
+                <a class="btn btn--ghost" th:href="@{/register}">Registrieren</a>
+            </div>
+
+            <!-- Logged in -->
+            <div class="actions"
+                 th:if="${#authorization.expression('isAuthenticated()')}">
+
+                <span class="userChip">
+                    <span class="userIcon">👤</span>
+                    <span th:text="${#authentication.name}">user</span>
+                </span>
+
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button class="btn btn--ghost" type="submit">Logout</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div th:replace="${content}"></div>
+</main>
+
+<footer class="footer">
+    <div class="container footer__inner">
+        <span>✨ MWAF Projekt · Online-Shop</span>
+    </div>
+</footer>
+</body>
+</html>

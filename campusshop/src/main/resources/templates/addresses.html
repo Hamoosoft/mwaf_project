@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Meine Adressen', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="page-header">
+        <h2>📍 Meine Adressen</h2>
+        <p class="subheading">
+            Hier kannst du deine Lieferadressen verwalten und eine Standardadresse festlegen.
+        </p>
+
+        <!-- kleine Navi-Buttons -->
+        <div class="btnRow" style="margin-top:12px; flex-wrap:wrap;">
+            <a class="btn btn--ghost" th:href="@{/}">⬅ Zurück zum Shop</a>
+            <a class="btn btn--secondary" th:href="@{/cart}">🧺 Zum Warenkorb</a>
+            <a class="btn btn--primary" th:href="@{/checkout}">✅ Checkout</a>
+        </div>
+    </div>
+
+    <!-- schmaler Container für Content -->
+    <div style="max-width: 980px; margin: 0 auto;">
+        <div class="profile-layout">
+
+            <!-- ===================== -->
+            <!-- LEFT: Adressen Liste -->
+            <!-- ===================== -->
+            <div class="hero__card profile-card">
+                <h3>Gespeicherte Adressen</h3>
+
+                <div th:if="${addresses == null || #lists.isEmpty(addresses)}" class="info-text" style="margin-top:10px;">
+                    Noch keine Adresse vorhanden. Füge rechts eine neue Adresse hinzu.
+                </div>
+
+                <div th:if="${addresses != null && !#lists.isEmpty(addresses)}"
+                     style="display:flex; flex-direction:column; gap:12px; margin-top:12px;">
+
+                    <div class="address-item hero__card profile-card"
+                         style="padding:14px;"
+                         th:each="a : ${addresses}">
+
+                        <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+
+                            <div style="min-width:240px;">
+                                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                    <strong th:text="${a.fullName}" style="font-weight:900;">Name</strong>
+
+                                    <!-- Standard Badge -->
+                                    <span th:if="${a.defaultAddress}"
+                                          class="hero__tag"
+                                          style="margin:0;">
+                                        ✅ Standardadresse
+                                    </span>
+                                </div>
+
+                                <div class="muted" style="margin-top:6px; line-height:1.55;">
+                                    <span th:text="${a.street}">Straße</span><br>
+                                    <span th:text="${a.zip}">PLZ</span>
+                                    <span th:text="${a.city}">Stadt</span><br>
+                                    <span th:text="${a.country}">Land</span>
+                                </div>
+                            </div>
+
+                            <div class="btnRow" style="gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                                <!-- Als Standard festlegen -->
+                                <form class="inline"
+                                      th:if="${!a.defaultAddress}"
+                                      th:action="@{/addresses/{id}/default(id=${a.id})}"
+                                      method="post">
+                                    <button type="submit" class="btn btn--primary btn--small">
+                                        Als Standard
+                                    </button>
+                                </form>
+
+                                <!-- Löschen -->
+                                <form class="inline"
+                                      th:action="@{/addresses/{id}/delete(id=${a.id})}"
+                                      method="post">
+                                    <button type="submit"
+                                            class="btn btn--ghost btn--small"
+                                            onclick="return confirm('Adresse wirklich löschen?');">
+                                        Löschen
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== -->
+            <!-- RIGHT: Neue Adresse -->
+            <!-- ===================== -->
+            <div class="hero__card profile-card">
+                <h3>➕ Neue Adresse hinzufügen</h3>
+
+                <p class="form-hint">
+                    Nach dem Speichern kannst du sie als Standardadresse festlegen.
+                </p>
+
+                <form th:action="@{/addresses}" th:object="${address}" method="post" class="form">
+
+                    <div class="form-group">
+                        <label class="form-label">Vollständiger Name</label>
+                        <input class="form-input" type="text" th:field="*{fullName}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Straße</label>
+                        <input class="form-input" type="text" th:field="*{street}" required>
+                    </div>
+
+                    <div class="profile-layout" style="grid-template-columns: 1fr 1fr; gap:12px;">
+                        <div class="form-group">
+                            <label class="form-label">PLZ</label>
+                            <input class="form-input" type="text" th:field="*{zip}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Stadt</label>
+                            <input class="form-input" type="text" th:field="*{city}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Land</label>
+                        <input class="form-input" type="text" th:field="*{country}" required placeholder="z.B. Deutschland">
+                    </div>
+
+                    <button type="submit" class="btn btn--primary btn-block">
+                        Adresse speichern
+                    </button>
+
+                    <div class="btnRow" style="margin-top:12px;">
+                        <a class="btn btn--ghost btn-block" th:href="@{/checkout}">
+                            ↩ Zurück zum Checkout
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</html>

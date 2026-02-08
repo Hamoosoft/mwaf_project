@@ -131,6 +131,14 @@ public class OrderService {
 
         return toDto(order);
     }
+    @Transactional(readOnly = true)
+    public OrderDto getMyOrderById(Long orderId, AppUser currentUser) {
+        Order order = orderRepository.findByIdAndUserIdWithItems(orderId, currentUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        return toDto(order);
+    }
+
 
     // ✅ NEU: Orders für aktuellen User
     public List<OrderDto> getMyOrders(AppUser currentUser) {
@@ -183,6 +191,8 @@ public class OrderService {
 
     // ---------------- Mapping: Entity -> DTO ----------------
 
+    // ---------------- Mapping: Entity -> DTO ----------------
+
     private OrderDto toDto(Order order) {
         OrderDto dto = new OrderDto();
         dto.setId(order.getId());
@@ -191,6 +201,16 @@ public class OrderService {
         dto.setTotal(order.getTotal());
         dto.setOrderedAt(order.getOrderedAt());
 
+        // ✅ NEU: Shipping Snapshot (für order-details.html)
+        dto.setShippingFullName(order.getShippingFullName());
+        dto.setShippingStreet(order.getShippingStreet());
+        dto.setShippingZip(order.getShippingZip());
+        dto.setShippingCity(order.getShippingCity());
+        dto.setShippingCountry(order.getShippingCountry());
+
+        // ✅ NEU: Payment Method
+        dto.setPaymentMethod(order.getPaymentMethod());
+
         List<OrderItemDto> items = order.getItems().stream()
                 .map(this::toItemDto)
                 .toList();
@@ -198,6 +218,7 @@ public class OrderService {
         dto.setItems(items);
         return dto;
     }
+
 
     private OrderItemDto toItemDto(OrderItem item) {
         OrderItemDto dto = new OrderItemDto();

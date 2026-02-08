@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, content)">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${title}">Admin · CampusShop</title>
+
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="topbar__inner topbar__pill">
+
+        <!-- Brand -->
+        <a class="brand" th:href="@{/admin}">
+            <span class="brand__logo">🛠️</span>
+            <span class="brand__name">Admin Panel</span>
+        </a>
+
+        <!-- Admin Nav -->
+        <nav class="nav nav--pill">
+            <a class="navItem" th:href="@{/admin}">
+                🧭 <span>Dashboard</span>
+            </a>
+
+            <a class="navItem" th:href="@{/admin/products}">
+                🛒 <span>Produkte</span>
+            </a>
+
+            <a class="navItem" th:href="@{/admin/orders}">
+                📦 <span>Bestellungen</span>
+            </a>
+
+            <!-- Zurück zum Shop -->
+            <a class="navItem" th:href="@{/}">
+                ↩️ <span>Shop</span>
+            </a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="topbar__actions">
+
+            <span class="userChip"
+                  th:if="${#authorization.expression('isAuthenticated()')}">
+                <span class="userIcon">👤</span>
+                <span th:text="${#authentication.name}">admin</span>
+                <span class="muted" style="margin-left:6px;">(ADMIN)</span>
+            </span>
+
+            <form th:action="@{/logout}" method="post" class="inline"
+                  th:if="${#authorization.expression('isAuthenticated()')}">
+                <button class="btn btn--ghost" type="submit">Logout</button>
+            </form>
+
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div th:replace="${content}"></div>
+</main>
+
+<footer class="footer">
+    <div class="container footer__inner">
+        <span>🛠️ Admin Panel · CampusShop</span>
+    </div>
+</footer>
+
+</body>
+</html>

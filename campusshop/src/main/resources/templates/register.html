@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Registrieren', ~{::content})}">
+
+<div th:fragment="content">
+
+    <section class="auth">
+        <div class="authCard">
+            <h1>Registrieren</h1>
+            <p class="muted">Erstelle ein Konto für HSIG Onlineshopping.</p>
+
+            <div class="alert alert--error" th:if="${errorMessage}">
+                <span th:text="${errorMessage}">Fehler</span>
+            </div>
+
+            <form method="post" th:action="@{/register}" class="form">
+                <input type="hidden" th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+
+                <label class="label">Benutzername</label>
+                <input class="input"
+                       type="text"
+                       name="username"
+                       autocomplete="username"
+                       required>
+
+                <label class="label">Passwort</label>
+                <input class="input"
+                       type="password"
+                       name="password"
+                       autocomplete="new-password"
+                       required>
+
+                <label class="label">Passwort wiederholen</label>
+                <input class="input"
+                       type="password"
+                       name="passwordRepeat"
+                       autocomplete="new-password"
+                       required>
+
+                <button class="btn btn--primary" type="submit">
+                    Konto erstellen
+                </button>
+            </form>
+
+            <p class="muted" style="margin-top:12px;">
+                Schon ein Konto?
+                <a th:href="@{/login}">Einloggen</a>
+            </p>
+        </div>
+    </section>
+
+</div>
+</html>

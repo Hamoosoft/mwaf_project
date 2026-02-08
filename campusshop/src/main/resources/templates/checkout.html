@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Checkout', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="page-header">
+        <h2>✅ Checkout</h2>
+        <p class="subheading">
+            Wähle deine Lieferadresse und eine Zahlungsmethode aus – dann kannst du die Bestellung abschicken.
+        </p>
+
+        <div class="btnRow" style="margin-top:12px; flex-wrap:wrap;">
+            <a class="btn btn--ghost" th:href="@{/cart}">⬅ Zurück zum Warenkorb</a>
+            <a class="btn btn--secondary" th:href="@{/addresses}">📍 Adressen</a>
+            <a class="btn btn--ghost" th:href="@{/}">🛒 Weiter einkaufen</a>
+        </div>
+    </div>
+
+    <!-- schmaler Bereich -->
+    <div style="max-width: 980px; margin: 0 auto;">
+        <div class="profile-layout">
+
+            <!-- LEFT: Form -->
+            <div class="hero__card profile-card">
+
+                <h3>Lieferung & Zahlung</h3>
+
+                <!-- Wenn keine Adressen -->
+                <div th:if="${addresses == null || #lists.isEmpty(addresses)}" class="info-text" style="margin-top:10px;">
+                    Du hast noch keine Adresse gespeichert. Bitte lege zuerst eine Adresse an.
+                    <div class="btnRow" style="margin-top:12px;">
+                        <a class="btn btn--primary btn-block" th:href="@{/addresses}">
+                            ➕ Adresse anlegen
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Form nur wenn es Adressen gibt -->
+                <form th:if="${addresses != null && !#lists.isEmpty(addresses)}"
+                      th:action="@{/checkout}"
+                      th:object="${checkout}"
+                      method="post"
+                      class="form"
+                      style="margin-top:10px;">
+
+                    <!-- Adresse -->
+                    <div class="form-group">
+                        <label class="form-label">Lieferadresse</label>
+
+                        <select class="form-input" th:field="*{addressId}" required>
+                            <option value="" disabled selected>Bitte Adresse auswählen…</option>
+
+                            <option th:each="a : ${addresses}"
+                                    th:value="${a.id}"
+                                    th:text="${(a.defaultAddress ? '✅ Standard · ' : '')
+                                              + a.fullName + ' — '
+                                              + a.street + ', '
+                                              + a.zip + ' '
+                                              + a.city + ' (' + a.country + ')'}">
+                            </option>
+                        </select>
+
+                        <p class="form-hint">
+                            Tipp: Deine Standardadresse ist mit ✅ markiert und steht oben.
+                        </p>
+
+                        <p class="form-hint">
+                            Keine passende Adresse?
+                            <a th:href="@{/addresses}">Adresse verwalten</a>
+                        </p>
+                    </div>
+
+                    <!-- Zahlung -->
+                    <div class="form-group">
+                        <label class="form-label">Zahlungsmethode</label>
+
+                        <select class="form-input" th:field="*{paymentMethod}" required>
+                            <option th:each="pm : ${paymentMethods}"
+                                    th:value="${pm}"
+                                    th:text="${
+                                        pm.name() == 'CARD' ? 'Kreditkarte' :
+                                        (pm.name() == 'PAYPAL' ? 'PayPal' :
+                                        (pm.name() == 'INVOICE' ? 'Rechnung' : pm.name()))
+                                    }">
+                            </option>
+                        </select>
+
+                        <p class="form-hint">
+                            Die Zahlungsart wird in der Bestellung gespeichert, damit sie später nachvollziehbar bleibt.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary btn-block">
+                        Bestellung abschicken
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- RIGHT: Info -->
+            <div class="hero__card profile-card">
+                <h3>ℹ️ Hinweis</h3>
+
+                <p class="miniCard__text" style="margin:0;">
+                    Nach dem Absenden siehst du:
+                </p>
+
+                <div class="info-text" style="margin-top:12px;">
+                    ✅ Bestellübersicht mit Produkten<br>
+                    ✅ Mengen & Gesamtsumme<br>
+                    ✅ Lieferadresse als Snapshot<br>
+                    ✅ Gewählte Zahlungsmethode
+                </div>
+
+                <div class="btnRow" style="margin-top:16px;">
+                    <a class="btn btn--secondary btn-block" th:href="@{/addresses}">
+                        Adressen verwalten
+                    </a>
+                    <a class="btn btn--ghost btn-block" th:href="@{/orders}">
+                        📦 Zu meinen Bestellungen
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</html>

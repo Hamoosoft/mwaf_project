@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Bestellung', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="page-header">
+        <h2>Bestellung #<span th:text="${order.id}">0</span></h2>
+        <p class="subheading">
+            Status: <b th:text="${order.status}">NEW</b> ·
+            <span th:text="${#temporals.format(order.orderedAt, 'dd.MM.yyyy HH:mm')}">-</span>
+        </p>
+    </div>
+
+    <div class="grid grid--2">
+
+        <div class="hero__card profile-card">
+            <h3>Lieferadresse (Snapshot)</h3>
+            <div class="muted" th:text="${order.shippingFullName}">Name</div>
+            <div class="muted" th:text="${order.shippingStreet}">Street</div>
+            <div class="muted">
+                <span th:text="${order.shippingZip}">0</span>
+                <span th:text="${order.shippingCity}">City</span>
+            </div>
+            <div class="muted" th:text="${order.shippingCountry}">DE</div>
+
+            <hr class="sep"/>
+
+            <h3>Zahlungsmethode</h3>
+            <div class="muted" th:text="${order.paymentMethod}">CARD</div>
+        </div>
+
+        <div class="hero__card profile-card">
+            <h3>Positionen</h3>
+
+            <div th:each="i : ${order.items}" class="lineItem">
+                <div>
+                    <b th:text="${i.productName}">Produkt</b>
+                    <div class="muted">Menge: <span th:text="${i.quantity}">1</span></div>
+                </div>
+                <div style="text-align:right">
+                    <div class="muted"
+                         th:text="${#numbers.formatDecimal(i.unitPrice, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00</div>
+                    <div>
+                        <b th:text="${#numbers.formatDecimal(i.lineTotal, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00</b>
+                    </div>
+                </div>
+            </div>
+
+
+            <hr class="sep"/>
+
+            <div style="display:flex;justify-content:space-between">
+                <span><b>Gesamt</b></span>
+                <span><b th:text="${#numbers.formatDecimal(order.total, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</b></span>
+            </div>
+
+            <div class="btnRow" style="margin-top:16px">
+                <a class="btn btn--ghost" th:href="@{/orders}">Zur Übersicht</a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</html>

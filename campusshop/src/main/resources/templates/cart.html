@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Warenkorb', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="page-header">
+        <h2>🧺 Warenkorb</h2>
+        <p class="subheading">Hier siehst du deine Produkte. Danach geht’s zum Checkout.</p>
+    </div>
+
+    <div class="hero__card profile-card">
+
+        <!-- wenn leer -->
+        <div class="info-text" th:if="${cart == null || cart.items == null || #lists.isEmpty(cart.items)}">
+            Dein Warenkorb ist leer.
+            <div style="margin-top:10px">
+                <a class="btn btn--primary" th:href="@{/}">Produkte ansehen</a>
+            </div>
+        </div>
+
+        <!-- wenn items vorhanden -->
+        <div th:if="${cart != null && cart.items != null && !#lists.isEmpty(cart.items)}">
+
+            <div class="address-item" th:each="it : ${cart.items}">
+                <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-weight:950;" th:text="${it.productName}">Produktname</div>
+                        <div class="muted" th:text="${it.unitPrice} + ' € pro Stück'">0 €</div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <!-- Quantity ändern -->
+                        <form method="post" th:action="@{/cart/items/{id}(id=${it.id})}" class="inline">
+                            <input class="form-input" style="width:90px;"
+                                   type="number" name="quantity"
+                                   min="1" th:value="${it.quantity}" />
+                            <button class="btn btn--ghost btn--small" type="submit">Menge</button>
+                        </form>
+
+                        <!-- Entfernen -->
+                        <form method="post" th:action="@{/cart/items/{id}/delete(id=${it.id})}" class="inline">
+                            <button class="btn btn--secondary btn--small" type="submit">Entfernen</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:14px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;">
+                <div style="font-weight:950;">
+                    Gesamt:
+                    <span th:text="${cart.total} + ' €'">0 €</span>
+                </div>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <form method="post" th:action="@{/cart/clear}" class="inline">
+                        <button class="btn btn--ghost" type="submit">Warenkorb leeren</button>
+                    </form>
+
+                    <a class="btn btn--primary" th:href="@{/checkout}">Zum Checkout</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</html>

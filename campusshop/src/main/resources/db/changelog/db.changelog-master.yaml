@@ -7,3 +7,7 @@ databaseChangeLog:
       file: db/changelog/021-orders-user-link.yaml
   - include:
       file: db/changelog/022-orders-aud-sync.yaml
+  - include:
+      file: db/changelog/023-expand-country-length.yaml
+  - include:
+      file: db/changelog/024-extend-country.yaml

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Mein Profil', ~{::content})}">
+
+<div th:fragment="content">
+
+    <div class="form-page">
+
+        <div class="page-header">
+            <h2>Mein Profil</h2>
+            <p class="subheading">Verwalte die Kontodaten für HSIG Onlineshopping.</p>
+        </div>
+
+        <div class="profile-layout">
+
+            <!-- Profildaten -->
+            <div class="card profile-card">
+                <h3>Profildaten</h3>
+
+                <form method="post" th:action="@{/profile}">
+                    <!-- falls CSRF aktiv ist, funktioniert das automatisch -->
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <div class="form-group">
+                        <label class="form-label">E-Mail</label>
+                        <input type="email" class="form-input" th:value="${email}" disabled />
+                        <p class="form-hint">Die E-Mail-Adresse ist Ihr Login-Name.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Benutzername</label>
+                        <input type="text" class="form-input" name="name" th:value="${name}" required />
+                        <p class="form-hint">Dieser Name wird auch für den Login verwendet.</p>
+                    </div>
+
+                    <!-- Message -->
+                    <p class="info-text"
+                       th:if="${profileMessage != null}"
+                       th:classappend="${profileError} ? ' error' : ''"
+                       th:text="${profileMessage}">
+                    </p>
+
+                    <button type="submit" class="btn btn--primary btn-block">
+                        Profil speichern
+                    </button>
+                </form>
+            </div>
+
+            <!-- Passwort ändern -->
+            <div class="card profile-card">
+                <h3>Passwort ändern</h3>
+
+                <form method="post" th:action="@{/profile/password}">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <div class="form-group">
+                        <label class="form-label">Aktuelles Passwort</label>
+                        <input type="password" class="form-input" name="currentPassword" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Neues Passwort</label>
+                        <input type="password" class="form-input" name="newPassword" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Neues Passwort wiederholen</label>
+                        <input type="password" class="form-input" name="newPasswordRepeat" required />
+                    </div>
+
+                    <!-- Message -->
+                    <p class="info-text"
+                       th:if="${passwordMessage != null}"
+                       th:classappend="${passwordError} ? ' error' : ''"
+                       th:text="${passwordMessage}">
+                    </p>
+
+                    <button type="submit" class="btn btn--secondary btn-block">
+                        Passwort ändern
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</html>

@@ -11,7 +11,7 @@ import java.util.Optional;
  * Repository für Adressen.
  */
 public interface AddressRepository extends JpaRepository<Address, Long> {
-
+    List<Address> findByUser(AppUser user);
     /**
      * Liefert alle Adressen eines Users.
      * Standardadresse steht immer zuerst.
