@@ -8,7 +8,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+/**
+ * Security-Konfiguration:
+ * - Public: Startseite, Login/Register + statische Assets
+ * - USER/ADMIN: Shop-Seiten + API
+ * - ADMIN: /admin/**
+ *
+ * CSRF:
+ * - bleibt für HTML-Forms aktiv (sicher)
+ * - wird für /api/** deaktiviert (praktisch für Postman)
+ */
 @Configuration
 public class SecurityConfig {
 
@@ -21,42 +32,54 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // Für klassische HTML-Forms (Login/Register) ist CSRF eigentlich gut.
-                // ABER: wenn du viel mit Postman/REST testest, lässt man es oft erstmal aus.
-                .csrf(csrf -> csrf.disable())
+                // ✅ CSRF nur für API ausschalten (Postman), Web-Forms bleiben geschützt
+                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                        new AntPathRequestMatcher("/api/**")
+                ))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register",
-                                "/css/**", "/js/**", "/images/**").permitAll()
 
-                        // REST API
+                        // ✅ Static + public pages
+                        .requestMatchers("/", "/login", "/register",
+                                "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+
+                        // ✅ Admin Bereich
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // ✅ REST API (für USER + ADMIN)
                         .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
 
-                        // Seiten
-                        .requestMatchers("/addresses", "/orders", "/profile", "/cart")
-                        .hasAnyRole("USER", "ADMIN")
+                        // ✅ Shop Seiten (USER + ADMIN)
+                        .requestMatchers(
+                                "/addresses/**",
+                                "/orders/**",
+                                "/profile/**",
+                                "/cart/**",
+                                "/checkout/**",
+                                "/web/products/**"
+                        ).hasAnyRole("USER", "ADMIN")
 
+                        // ✅ Alles andere: Login nötig
                         .anyRequest().authenticated()
                 )
 
-
-                // Web-Login (Thymeleaf Login Page)
+                // ✅ Web-Login (Thymeleaf)
                 .formLogin(form -> form
                         .loginPage("/login")
-                        // wenn Login erfolgreich-> auf Startseite (du kannst auch "/products" nehmen)
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
 
-                // Logout
+                // ✅ Logout
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+                        .permitAll()
                 )
 
-                // Optional: damit Postman weiterhin geht
+                // ✅ Optional für Postman / Basic Auth
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
